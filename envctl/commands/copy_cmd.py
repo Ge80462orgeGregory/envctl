@@ -21,6 +21,12 @@ from envctl.copy import copy_env, CopyError
     default=False,
     help="Overwrite existing keys in the destination environment.",
 )
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="Preview which keys would be copied without making any changes.",
+)
 def copy_cmd(
     src_project: str,
     src_env: str,
@@ -28,6 +34,7 @@ def copy_cmd(
     dst_env: str,
     keys: tuple[str, ...],
     overwrite: bool,
+    dry_run: bool,
 ) -> None:
     """Copy env vars from SRC_PROJECT/SRC_ENV to DST_PROJECT/DST_ENV.
 
@@ -42,6 +49,7 @@ def copy_cmd(
             dst_env=dst_env,
             keys=list(keys) if keys else None,
             overwrite=overwrite,
+            dry_run=dry_run,
         )
     except CopyError as exc:
         raise click.ClickException(str(exc)) from exc
@@ -50,9 +58,13 @@ def copy_cmd(
         click.echo("Nothing to copy — all keys already exist in the destination.")
         return
 
+    action = "Would copy" if dry_run else "Copied"
     click.echo(
-        f"Copied {len(copied)} key(s) from "
-        f"{src_project}/{src_env} → {dst_project}/{dst_env}:"
+        f"{action} {len(copied)} key(s) from "
+        f"{src_project}/{src_env} \u2192 {dst_project}/{dst_env}:"
     )
     for key in sorted(copied):
         click.echo(f"  {key}")
+
+    if dry_run:
+        click.echo("(Dry run — no changes were made.)")
