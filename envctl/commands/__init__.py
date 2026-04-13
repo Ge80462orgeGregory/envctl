@@ -1,4 +1,7 @@
-"""envctl CLI entry point — registers all sub-commands."""
+"""Root CLI group and command registration for envctl."""
+
+from __future__ import annotations
+
 import click
 
 from envctl.commands.diff_cmd import diff_cmd
@@ -15,15 +18,19 @@ from envctl.commands.validate_cmd import validate_cmd
 from envctl.commands.merge_cmd import merge_cmd
 from envctl.commands.snapshot_cmd import snapshot_cmd
 from envctl.commands.search_cmd import search_cmd
+from envctl.commands.protect_cmd import protect_cmd
+from envctl.commands.placeholder_cmd import placeholder_cmd
+from envctl.commands.flatten_cmd import flatten_cmd
+from envctl.commands.resolve_cmd import resolve_cmd
+from envctl.commands.history_cmd import history_cmd
 from envctl.commands.watch_cmd import watch_cmd
+from envctl.commands.reorder_cmd import reorder_cmd
 
 
 @click.group()
 @click.version_option()
-@click.pass_context
-def cli(ctx: click.Context) -> None:
+def cli() -> None:
     """envctl — manage and sync environment variable sets."""
-    ctx.ensure_object(dict)
 
 
 cli.add_command(diff_cmd)
@@ -40,4 +47,10 @@ cli.add_command(validate_cmd)
 cli.add_command(merge_cmd)
 cli.add_command(snapshot_cmd)
 cli.add_command(search_cmd)
+cli.add_command(protect_cmd)
+cli.add_command(placeholder_cmd)
+cli.add_command(flatten_cmd)
+cli.add_command(resolve_cmd)
+cli.add_command(history_cmd)
 cli.add_command(watch_cmd)
+cli.add_command(reorder_cmd)
