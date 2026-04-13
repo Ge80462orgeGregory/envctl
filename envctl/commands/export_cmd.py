@@ -51,8 +51,23 @@ def export_cmd(project: str, environment: str, fmt: str, prefix: str, output: st
         sys.exit(1)
 
     if output:
-        with open(output, "w", encoding="utf-8") as fh:
-            fh.write(result + "\n")
-        click.echo(f"Exported {len(variables)} variable(s) to '{output}'.")
+        _write_to_file(output, result, len(variables))
     else:
         click.echo(result)
+
+
+def _write_to_file(path: str, content: str, variable_count: int) -> None:
+    """Write exported content to a file and print a confirmation message.
+
+    Args:
+        path: Destination file path.
+        content: The formatted export string to write.
+        variable_count: Number of variables exported, used in the confirmation.
+    """
+    try:
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(content + "\n")
+    except OSError as exc:
+        click.echo(f"Failed to write to '{path}': {exc}", err=True)
+        sys.exit(1)
+    click.echo(f"Exported {variable_count} variable(s) to '{path}'.")
