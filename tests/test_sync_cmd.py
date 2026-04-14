@@ -69,3 +69,22 @@ def test_sync_cmd_specific_keys(mock_cfg, mock_sync, runner):
         overwrite=False,
         keys=["API_KEY"],
     )
+
+
+@patch("envctl.commands.sync_cmd.sync_envs")
+@patch("envctl.commands.sync_cmd.load_config", return_value={})
+def test_sync_cmd_multiple_keys(mock_cfg, mock_sync, runner):
+    """Test that multiple --key flags are collected into a list."""
+    mock_sync.return_value = {"added": ["API_KEY", "SECRET"], "updated": [], "skipped": []}
+    result = runner.invoke(
+        sync_cmd,
+        ["myapp", "staging", "production", "--key", "API_KEY", "--key", "SECRET"],
+    )
+    assert result.exit_code == 0
+    mock_sync.assert_called_once_with(
+        project="myapp",
+        source_env="staging",
+        target_env="production",
+        overwrite=False,
+        keys=["API_KEY", "SECRET"],
+    )
