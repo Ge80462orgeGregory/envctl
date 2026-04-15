@@ -96,3 +96,14 @@ def test_to_dict_avg_value_length_rounded():
     d = result.to_dict()
     assert isinstance(d["avg_value_length"], float)
     assert len(str(d["avg_value_length"]).split(".")[-1]) <= 2
+
+
+def test_summary_single_key_env():
+    """A single-key environment should have the same key as both longest and shortest."""
+    single_read = _make_read({"myapp": {"staging": {"ONLY_KEY": "value"}}})
+    result = summarize_env("myapp", "staging", single_read)
+    assert result.total_keys == 1
+    assert result.longest_key == "ONLY_KEY"
+    assert result.shortest_key == "ONLY_KEY"
+    assert result.empty_values == 0
+    assert result.non_empty_values == 1
