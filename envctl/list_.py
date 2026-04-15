@@ -53,3 +53,19 @@ def format_list(results: List[ListResult]) -> str:
         else:
             lines.append("  (no environments)")
     return "\n".join(lines)
+
+
+def format_summary(results: List[ListResult]) -> str:
+    """Format list results as a compact summary line.
+
+    Example output:
+        3 project(s), 7 environment(s) total.
+    """
+    if not results:
+        return "No projects found."
+
+    total_envs = sum(len(r.entries) for r in results)
+    project_count = len(results)
+    return (
+        f"{project_count} project(s), {total_envs} environment(s) total."
+    )
