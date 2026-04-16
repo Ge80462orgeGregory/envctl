@@ -88,3 +88,12 @@ def test_fmt_cmd_writes_to_file(runner, tmp_path):
     assert out_file.exists()
     content = out_file.read_text()
     assert 'API_KEY="abc123"' in content
+
+
+@_patch()
+def test_fmt_cmd_default_style_is_dotenv(runner):
+    """Verify that omitting --style defaults to dotenv format."""
+    result = runner.invoke(fmt_cmd, ["myapp", "dev"])
+    assert result.exit_code == 0
+    assert 'API_KEY="abc123"' in result.output
+    assert 'PORT="8080"' in result.output
