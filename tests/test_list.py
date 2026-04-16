@@ -56,6 +56,13 @@ def test_list_project_envs_unknown_raises(patch_store):
         list_project_envs("/fake", "ghost")
 
 
+def test_list_project_envs_error_includes_project_name(patch_store):
+    """ListError message should contain the missing project name for clarity."""
+    patch_store({"myapp": ["local"]})
+    with pytest.raises(ListError, match="ghost"):
+        list_project_envs("/fake", "ghost")
+
+
 def test_format_list_empty():
     assert format_list([]) == "No projects found."
 
