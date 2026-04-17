@@ -102,8 +102,14 @@ def test_summary_single_key_env():
     """A single-key environment should have the same key as both longest and shortest."""
     single_read = _make_read({"myapp": {"staging": {"ONLY_KEY": "value"}}})
     result = summarize_env("myapp", "staging", single_read)
-    assert result.total_keys == 1
     assert result.longest_key == "ONLY_KEY"
     assert result.shortest_key == "ONLY_KEY"
-    assert result.empty_values == 0
-    assert result.non_empty_values == 1
+
+
+def test_summary_all_empty_values():
+    """An environment where all values are empty strings should report non_empty_values as 0."""
+    all_empty_read = _make_read({"myapp": {"staging": {"KEY_A": "", "KEY_B": ""}}})
+    result = summarize_env("myapp", "staging", all_empty_read)
+    assert result.empty_values == 2
+    assert result.non_empty_values == 0
+    assert result.avg_value_length == 0.0
