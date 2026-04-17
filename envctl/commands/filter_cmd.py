@@ -19,6 +19,10 @@ def filter_cmd(project, environment, prefix, suffix, contains, value_contains, i
     cfg = load_config()
     envs_dir = get_envs_dir(cfg)
 
+    # Warn if no filter options were provided — result will include all keys.
+    if not any([prefix, suffix, contains, value_contains]):
+        click.echo("Warning: no filter options specified; all keys will be returned.", err=True)
+
     def read_env(p, e):
         return _store_read_env(p, e, envs_dir=envs_dir)
 
