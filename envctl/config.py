@@ -33,7 +33,12 @@ def load_config() -> dict[str, Any]:
     if not DEFAULT_CONFIG_FILE.exists():
         return DEFAULT_CONFIG.copy()
     with open(DEFAULT_CONFIG_FILE, "r") as f:
-        data = json.load(f)
+        try:
+            data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"Configuration file '{DEFAULT_CONFIG_FILE}' contains invalid JSON: {e}"
+            ) from e
     # Merge with defaults to handle missing keys in older configs
     merged = DEFAULT_CONFIG.copy()
     merged.update(data)
