@@ -27,12 +27,7 @@ def migrate_cmd(source_project, source_env, target_project, target_env, keys, re
     config = load_config()
     envs_dir = get_envs_dir(config)
 
-    key_map = {}
-    for remap in remaps:
-        if ":" not in remap:
-            raise click.BadParameter(f"Remap '{remap}' must be in OLD:NEW format.")
-        old, new = remap.split(":", 1)
-        key_map[old] = new
+    key_map = _parse_remaps(remaps)
 
     def _read(project, env):
         return read_env(envs_dir, project, env)
@@ -70,3 +65,24 @@ def migrate_cmd(source_project, source_env, target_project, target_env, keys, re
         click.echo(f"  {dest_key}={value}{remap_note}")
     if result.total_skipped:
         click.echo(f"Skipped {result.total_skipped} existing key(s) (use --overwrite to replace).")
+
+
+def _parse_remaps(remaps):
+    """Parse remap strings in OLD:NEW format into a key mapping dict.
+
+    Args:
+        remaps: Iterable of strings in "OLD:NEW" format.
+
+    Returns:
+        A dict mapping old key names to new key names.
+
+    Raises:
+        click.BadParameter: If any remap string is not in OLD:NEW format.
+    """
+    key_map = {}
+    for remap in remaps:
+        if ":" not in remap:
+            raise click.BadParameter(f"Remap '{remap}' must be in OLD:NEW format.")
+        old, new = remap.split(":", 1)
+        key_map[old] = new
+    return key_map
